@@ -1,0 +1,67 @@
+Socket Programming using C/C++/Java/python.
+a. TCP Client, TCP Server.
+b. UDP Client, UDP Server.
+
+Code
+# Tcp_client.py
+import socket
+def tcp_client(host='127.0.0.1', port=65432):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((host, port))
+        message = "Hello TCP Server!"
+        print(f"Sending: {message}")
+        s.sendall(message.encode())
+        data = s.recv(1024)
+        print('Received from server:', data.decode())
+
+if __name__ == '__main__':
+    tcp_client()
+
+# Tcp_server.py
+import socket
+
+def tcp_server(host='127.0.0.1', port=65432):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind((host, port))
+        s.listen()
+        print(f"TCP Server listening on {host}:{port}...")
+        conn, addr = s.accept()
+        with conn:
+            print(f"Connected by {addr}")
+            while True:
+                data = conn.recv(1024)
+                if not data:
+                    break
+                print("Received:", data.decode())
+                conn.sendall(data)  # Echo back
+if __name__ == '__main__':
+    tcp_server()
+
+# udp_client.py
+import socket
+def udp_client(host='127.0.0.1', port=65433):
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        message = "Hello UDP Server!"
+        s.sendto(message.encode(), (host, port))
+        print(f"Sent: {message}")
+
+        data, server = s.recvfrom(1024)  # Wait for response
+        print(f"Received from server: {data.decode()}")
+
+if __name__ == "__main__":
+    udp_client()
+
+
+# udp_server.py
+import socket
+def udp_server(host='127.0.0.1', port=65433):
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        s.bind((host, port))
+        print(f"UDP server listening on {host}:{port}...")
+        while True:
+            data, addr = s.recvfrom(1024)  # Receive data from client
+            print(f"Received from {addr}: {data.decode()}")
+            s.sendto(data, addr)  # Echo back to client
+
+if __name__ == "__main__":
+    udp_server()
